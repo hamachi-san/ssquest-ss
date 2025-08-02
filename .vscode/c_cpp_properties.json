@@ -6,7 +6,9 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/../../jo_engine/**"
             ],
-            "defines": [],
+            "defines": [
+                "JO_COMPILE_WITH_TGA_SUPPORT"
+            ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "gnu99",
             "cppStandard": "c++14",

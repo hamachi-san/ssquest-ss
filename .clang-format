@@ -1,0 +1,6 @@
+BasedOnStyle: LLVM
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true           # 関数定義のみ改行して {
+  AfterControlStatement: false  # if / for / while は改行しない
+  BeforeElse: false             # else の前も改行しない（if の閉じ波かっこと同じ行）

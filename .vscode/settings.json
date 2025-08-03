@@ -1,6 +1,6 @@
 {
   "[c]": {
     "editor.tabSize": 2,
-    "editor.insertSpaces": true  // true ならスペース、false ならタブ
+    "editor.insertSpaces": true
   }
 }

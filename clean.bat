@@ -5,6 +5,7 @@ SET PATH=%COMPILER_DIR%\WINDOWS\Other Utilities;%PATH%
 
 rm -f ./cd/0.bin
 rm -f *.o
+for /r src %%f in (*.o) do del /f /q "%%f"
 rm -f %JO_ENGINE_SRC_DIR%/*.o
 rm -f ./*.bin
 rm -f ./*.raw

@@ -1,8 +1,8 @@
-#include <assert.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include <jo/jo.h>
 #include "global_state.h"
+#include <assert.h>
+#include <jo/jo.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include "main.h"
 
 // 前置宣言
@@ -29,7 +29,7 @@ static const StateFunc s_state_functions[] = {
  *
  * @param globalState グローバルステート構造体へのポインタ
  */
-void globalStateInitialize(GlobalState *state)
+void globalStateInitialize(GlobalState* state)
 {
   assert(state);
 
@@ -41,7 +41,7 @@ void globalStateInitialize(GlobalState *state)
  *
  * @param globalState グローバルステート構造体へのポインタ
  */
-void globalStateOnUpdate(GlobalState *state)
+void globalStateOnUpdate(GlobalState* state)
 {
   assert(state);
 

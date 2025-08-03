@@ -4,7 +4,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../../jo_engine/**"
+                "${workspaceFolder}/../../jo_engine/**",
+                "${workspaceFolder}/src/**"
             ],
             "defines": [
                 "JO_COMPILE_WITH_TGA_SUPPORT"
@@ -12,7 +13,7 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "gnu99",
             "cppStandard": "c++14",
-            "intelliSenseMode": "windows-gcc-arm64"
+            "intelliSenseMode": "macos-clang-arm64"
         }
     ],
     "version": 4

@@ -37,11 +37,26 @@ void padUpdate(Pad* pad)
  *
  * @return 押下状態なら true
  */
-bool padIsButtonPressed(const Pad* pad, uint32_t key)
+bool padIsButtonPressed(const Pad* pad, Key key)
 {
   assert(pad);
 
   return !!(pad->_state & keyToKeyBit(key));
+}
+
+/**
+ * 指定のボタン(複数可)が押下状態であるかを取得する
+ *
+ * @param pad Pad 構造体へのポインタ
+ * @param key_bit 取得したいボタンのキービット（複合可）
+ *
+ * @return 押下状態なら true
+ */
+bool padIsButtonPressedKeyBit(const Pad* pad, KeyBit key_bit)
+{
+  assert(pad);
+
+  return !!(pad->_state & key_bit);
 }
 
 /**
@@ -52,7 +67,7 @@ bool padIsButtonPressed(const Pad* pad, uint32_t key)
  *
  * @return 押下されたなら true
  */
-bool padIsButtonPushed(const Pad* pad, uint32_t key)
+bool padIsButtonPushed(const Pad* pad, Key key)
 {
   assert(pad);
 

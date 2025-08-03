@@ -8,7 +8,8 @@
                 "${workspaceFolder}/src/**"
             ],
             "defines": [
-                "JO_COMPILE_WITH_TGA_SUPPORT"
+                "JO_COMPILE_WITH_TGA_SUPPORT",
+                "JO_NTSC_VERSION"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "gnu99",

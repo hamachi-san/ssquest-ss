@@ -9,38 +9,59 @@
 #include <memory.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
+#include "game/ball.h"
 #include "game/pad/pad.h"
 #include "game/state/global_state.h"
 #include "wrapper/input.h"
+#include "wrapper/math.h"
 
 typedef void (*UpdateFunc)(void);
-
-// 型定義
-typedef int SpriteId;
 
 // 関数の前置宣言
 static void mainLoop(void);
 
-static void onDraw(void);
 static jo_palette* handlePaletteLoaded();
+
 static void onUpdatePad(void);
+static void onUpdateBall(void);
+static void onDrawBall(void);
 
 // 毎フレーム呼び出される一連の関数
 static const UpdateFunc s_update_functions[] = {
   // パッドの更新処理
   onUpdatePad,
+  // ボールの更新処理
+  onUpdateBall,
   // 描画処理
-  onDraw,
+  onDrawBall,
   // 番兵
   NULL,
 };
 
+// ゲームステートとパッド入力データ
 static GlobalState g_global_state;
 static Pad s_pad;
-static jo_palette g_palette;
-static jo_palette g_palette2;
 
-static SpriteId g_sonic_id = -1;
+// パレットのデータ
+enum { PALETTE_COUNT = 6 };
+static jo_palette s_palettes[PALETTE_COUNT];
+
+// ボールのデータ
+enum { BALL_COUNT = 256 };
+static Ball s_balls[BALL_COUNT];
+static uint32_t s_enable_ball_count = 0;
+
+/**
+ * TGA 読み込み時のパレット作成処理
+ * パレット0番を渡して、そこに設定してもらう
+ */
+static jo_palette* handlePaletteLoaded()
+{
+  jo_create_palette(&s_palettes[0]);
+  return &s_palettes[0];
+}
 
 /**
  * JoEngine から毎フレーム呼び出される唯一の処理
@@ -55,18 +76,34 @@ static void mainLoop(void)
  */
 void onInitialize(void)
 {
-  // パレットとスプライトの設定
-  jo_set_tga_palette_handling(handlePaletteLoaded);
-  g_sonic_id = jo_sprite_add_tga("TEX", "BALL.TGA", 1);
-  jo_set_tga_palette_handling(JO_NULL);
-  jo_create_palette(&g_palette2);
-  memcpy(&g_palette2.data[0], &g_palette.data[0], sizeof g_palette.data[0] * 255);
-  g_palette2.data[27] = JO_COLOR_RGB(255, 255, 255);
-
+  // print 文の文字を白に設定
   jo_set_printf_color_index(JO_COLOR_INDEX_White);
+
+  // TGA からボールの画像を読み込み、パレットをロードする
+  jo_set_tga_palette_handling(handlePaletteLoaded);
+  const SpriteId sprite_id = jo_sprite_add_tga("TEX", "BALL.TGA", 1);
+  jo_set_tga_palette_handling(JO_NULL);
+
+  // ロードしたパレットを元にPALETTE_COUNT個分のパレットを作成し、色を適当に変える
+  jo_palette* original_palette = &s_palettes[0];
+
+  for (size_t i = 1; i < PALETTE_COUNT; ++i) {
+    jo_palette* palette = &s_palettes[i];
+    const uint32_t ball_color_index = 27;
+
+    jo_create_palette(palette);
+    memcpy(&palette->data[0], &original_palette->data[0], sizeof palette->data[0] * 255);
+    palette->data[ball_color_index] =
+      JO_COLOR_RGB(getRandom() % 255, getRandom() % 255, getRandom() % 255); // ランダムに色を決める
+  }
 
   // パッドの設定
   padInitialize(&s_pad);
+
+  // ボール作成
+  for (size_t i = 0; i < BALL_COUNT; ++i) {
+    ballInitialize(&s_balls[i], sprite_id, s_palettes[i % PALETTE_COUNT].id);
+  }
 }
 
 /**
@@ -84,18 +121,6 @@ void onUpdate(void)
 }
 
 /**
- * 描画処理
- */
-static void onDraw(void)
-{
-  jo_sprite_set_palette(g_palette.id);
-  jo_sprite_draw3D(g_sonic_id, 0, 0, 500);
-
-  jo_sprite_set_palette(g_palette2.id);
-  jo_sprite_draw3D(g_sonic_id, -100, -100, 500);
-}
-
-/**
  * パッド入力更新処理(& 画面表示)
  */
 static void onUpdatePad(void)
@@ -110,15 +135,23 @@ static void onUpdatePad(void)
   // キー入力
   padUpdate(&s_pad);
 
-  // キー状態を表示
-  jo_printf(0, 0, "%04d", s_pad._state);
+  // // キー状態を表示
+  // jo_printf(0, 0, "%04d", s_pad._state);
 
   // キー入力に応じて文字列表示
   if (padIsButtonPressed(&s_pad, KEY_UP)) {
     jo_printf(col, 1, "PAD_UP");
+
+    if (s_enable_ball_count < BALL_COUNT) {
+      ++s_enable_ball_count;
+    }
   }
   if (padIsButtonPressed(&s_pad, KEY_DOWN)) {
     jo_printf(col, 2, "PAD_DOWN");
+
+    if (0 < s_enable_ball_count) {
+      --s_enable_ball_count;
+    }
   }
   if (padIsButtonPressed(&s_pad, KEY_LEFT)) {
     jo_printf(col, 3, "PAD_LEFT");
@@ -153,15 +186,32 @@ static void onUpdatePad(void)
   if (padIsButtonPressed(&s_pad, KEY_START)) {
     jo_printf(col, 13, "PAD_START");
   }
+
+  // A or B or C ボタンが押されていたらボール 0 個にする
+  if (padIsButtonPressedKeyBit(&s_pad, KEY_BIT_A | KEY_BIT_B | KEY_BIT_C)) {
+    s_enable_ball_count = 0;
+  }
+}
+
+static void onUpdateBall(void)
+{
+  for (size_t i = 0; i < s_enable_ball_count; ++i) {
+    ballOnUpdate(&s_balls[i]);
+  }
 }
 
 /**
- * TGA 読み込み時のパレット作成処理
+ * ボールの描画処理
  */
-static jo_palette* handlePaletteLoaded()
+static void onDrawBall(void)
 {
-  jo_create_palette(&g_palette);
-  return &g_palette;
+  // ボールの数を表示
+  jo_clear_screen_line(0);
+  jo_printf(0, 0, "%03d", s_enable_ball_count);
+
+  for (size_t i = 0; i < s_enable_ball_count; ++i) {
+    ballOnDraw(&s_balls[i]);
+  }
 }
 
 /**

@@ -7,6 +7,9 @@
 #include <assert.h>
 #include <stdint.h>
 
+typedef uint32_t Key;
+typedef uint32_t KeyBit;
+
 /**
  * ボタン定義
  */

@@ -8,9 +8,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <jo/jo.h>
+#include "main.h"
+#include "global_state.h"
 #include "pad.h"
 
-typedef void (*StateFunc)(void);
 typedef void (*UpdateFunc)(void);
 
 // 型定義
@@ -18,34 +19,22 @@ typedef int SpriteId;
 
 // 関数の前置宣言
 static void mainLoop(void);
-static void onInitialize(void);
-static void onUpdate(void);
 
 static void onDraw(void);
 static jo_palette* handlePaletteLoaded();
 static void onUpdatePad(void);
 
-enum GlobalState {
-  GLOBAL_STATE_NULL,
-  GLOBAL_STATE_INITIALIZE,
-  GLOBAL_STATE_MAIN,
-};
-
-// 各ステートで呼び出す関数の定義
-static const StateFunc g_state_functions[] = {
-  NULL,         // GLOBAL_STATE_NULL
-  onInitialize, // GLOBAL_STATE_INITIALIZE
-  onUpdate,     // GLOBAL_STATE_MAIN
-};
-
-// GLOBAL_STATE_MAIN 時に呼び出される一連の関数
-static const UpdateFunc g_update_functions[] = {
+// 毎フレーム呼び出される一連の関数
+static const UpdateFunc s_update_functions[] = {
+  // パッドの更新処理
   onUpdatePad,
+  // 描画処理
   onDraw,
+  // 番兵
   NULL,
 };
 
-static uint32_t g_global_state;
+static GlobalState g_global_state;
 static Pad s_pad;
 static jo_palette g_palette;
 static jo_palette g_palette2;
@@ -57,20 +46,13 @@ static SpriteId g_sonic_id = -1;
  */
 static void mainLoop(void)
 {
-  // ステートに対応した関数を呼び出す
-  // ステートが更新されていたら新ステートの処理を再度呼び出す
-  uint32_t prev_state = GLOBAL_STATE_NULL;
-
-  while (g_global_state != prev_state) {
-    prev_state = g_global_state;
-    g_state_functions[g_global_state]();
-  }
+  globalStateOnUpdate(&g_global_state);
 }
 
 /**
  * ゲーム初期化処理
  */
-static void onInitialize(void)
+void onInitialize(void)
 {
   // パレットとスプライトの設定
   jo_set_tga_palette_handling(handlePaletteLoaded);
@@ -84,20 +66,17 @@ static void onInitialize(void)
 
   // パッドの設定
   padInitialize(&s_pad);
-
-  // ステートを更新して次へ遷移
-  ++g_global_state;
 }
 
 /**
  * ゲーム更新処理
  */
-static void onUpdate(void) {
+void onUpdate(void) {
   uint32_t index = 0;
 
   // 登録されている関数を全て呼び出す
-  while (g_update_functions[index]) {
-    g_update_functions[index]();
+  while (s_update_functions[index]) {
+    s_update_functions[index]();
     ++index;
   }
 }
@@ -112,15 +91,6 @@ static void onDraw(void)
 
   jo_sprite_set_palette(g_palette2.id);
   jo_sprite_draw3D(g_sonic_id, -100, -100, 500);
-}
-
-/**
- * TGA 読み込み時のパレット作成処理
- */
-static jo_palette* handlePaletteLoaded()
-{
-  jo_create_palette(&g_palette);
-  return &g_palette;
 }
 
 /**
@@ -184,15 +154,24 @@ static void onUpdatePad(void)
 }
 
 /**
+ * TGA 読み込み時のパレット作成処理
+ */
+static jo_palette* handlePaletteLoaded()
+{
+  jo_create_palette(&g_palette);
+  return &g_palette;
+}
+
+/**
  * エントリーポイント
  */
-void jo_main(void) // NOLINT(readability-identifier-naming)
+void jo_main(void)
 {
   // エンジンの初期化
   jo_core_init(JO_COLOR_Purple);
 
   // ステート初期化
-  g_global_state = GLOBAL_STATE_INITIALIZE;
+  globalStateInitialize(&g_global_state);
 
   // 唯一のステート処理関数をコールバック登録
   jo_core_add_callback(mainLoop);

@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include "pad/pad.h"
 #include "state/global_state.h"
+#include "wrapper/input.h"
 
 typedef void (*UpdateFunc)(void);
 
@@ -100,7 +101,7 @@ static void onDraw(void)
 static void onUpdatePad(void)
 {
   // 文字列表示クリア(ボタン定義数 + キー状態表示の分)
-  for (size_t i = 0; i < PAD_BUTTONS_MAX + 1; ++i) {
+  for (size_t i = 0; i < KEY_MAX + 1; ++i) {
     jo_clear_screen_line(i + 1);
   }
 
@@ -113,43 +114,43 @@ static void onUpdatePad(void)
   jo_printf(0, 0, "%04d", s_pad._state);
 
   // キー入力に応じて文字列表示
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_UP)) {
+  if (padIsButtonPressed(&s_pad, KEY_UP)) {
     jo_printf(col, 1, "PAD_UP");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_DOWN)) {
+  if (padIsButtonPressed(&s_pad, KEY_DOWN)) {
     jo_printf(col, 2, "PAD_DOWN");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_LEFT)) {
+  if (padIsButtonPressed(&s_pad, KEY_LEFT)) {
     jo_printf(col, 3, "PAD_LEFT");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_RIGHT)) {
+  if (padIsButtonPressed(&s_pad, KEY_RIGHT)) {
     jo_printf(col, 4, "PAD_RIGHT");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_A)) {
+  if (padIsButtonPressed(&s_pad, KEY_A)) {
     jo_printf(col, 5, "PAD_A");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_B)) {
+  if (padIsButtonPressed(&s_pad, KEY_B)) {
     jo_printf(col, 6, "PAD_B");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_C)) {
+  if (padIsButtonPressed(&s_pad, KEY_C)) {
     jo_printf(col, 7, "PAD_C");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_X)) {
+  if (padIsButtonPressed(&s_pad, KEY_X)) {
     jo_printf(col, 8, "PAD_X");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_Y)) {
+  if (padIsButtonPressed(&s_pad, KEY_Y)) {
     jo_printf(col, 9, "PAD_Y");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_Z)) {
+  if (padIsButtonPressed(&s_pad, KEY_Z)) {
     jo_printf(col, 10, "PAD_Z");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_L)) {
+  if (padIsButtonPressed(&s_pad, KEY_L)) {
     jo_printf(col, 11, "PAD_L");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_R)) {
+  if (padIsButtonPressed(&s_pad, KEY_R)) {
     jo_printf(col, 12, "PAD_R");
   }
-  if (padIsButtonPressed(&s_pad, PAD_BUTTON_BITS_START)) {
+  if (padIsButtonPressed(&s_pad, KEY_START)) {
     jo_printf(col, 13, "PAD_START");
   }
 }

@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include <jo/jo.h>
 #include "main.h"
-#include "global_state.h"
-#include "pad.h"
+#include "pad/pad.h"
+#include "state/global_state.h"
 
 typedef void (*UpdateFunc)(void);
 

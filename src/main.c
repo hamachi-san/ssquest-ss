@@ -4,11 +4,11 @@
  * Copyright (C) 2025, hamachi-san(ssgameuser@gmail.com)
  * All rights reserved.
  */
+#include "main.h"
+#include <jo/jo.h>
 #include <memory.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <jo/jo.h>
-#include "main.h"
 #include "pad/pad.h"
 #include "state/global_state.h"
 
@@ -71,7 +71,8 @@ void onInitialize(void)
 /**
  * ゲーム更新処理
  */
-void onUpdate(void) {
+void onUpdate(void)
+{
   uint32_t index = 0;
 
   // 登録されている関数を全て呼び出す

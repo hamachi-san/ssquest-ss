@@ -1,6 +1,37 @@
 BasedOnStyle: LLVM
+IndentWidth: 2          # インデント幅を2スペースに指定
+ContinuationIndentWidth: 2 # 継続行やリストの中の字下げも2スペースに
+TabWidth: 2             # タブ幅も2スペースに
+UseTab: Never           # タブは使わずスペースを使う
+ColumnLimit: 120        # 1行120文字まで
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterFunction: true           # 関数定義のみ改行して {
   AfterControlStatement: false  # if / for / while は改行しない
   BeforeElse: false             # else の前も改行しない（if の閉じ波かっこと同じ行）
+AllowShortFunctionsOnASingleLine: None
+PointerBindsToType: true        # ポインタの * は型名の後ろ
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: '^<.*\.h>'
+    Priority: 1
+    SortPriority: 0
+    Name: C Standard Library
+
+  - Regex: '^<.*>'
+    Priority: 2
+    SortPriority: 0
+    Name: External Libraries
+
+  - Regex: '^"(.*)\.h"$'
+    Priority: 3
+    SortPriority: 0
+    Name: Corresponding Header
+
+  - Regex: '^".*"'
+    Priority: 4
+    SortPriority: 0
+    Name: Project Headers
+
+SortIncludes: true
+

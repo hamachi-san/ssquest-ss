@@ -26,6 +26,7 @@ static jo_palette* handlePaletteLoaded();
 
 static void onUpdatePad(void);
 static void onUpdateBall(void);
+static void animatePalette(void);
 static void onDrawBall(void);
 
 // 毎フレーム呼び出される一連の関数
@@ -34,6 +35,8 @@ static const UpdateFunc s_update_functions[] = {
   onUpdatePad,
   // ボールの更新処理
   onUpdateBall,
+  // マスターパレットのパレットアニメーション
+  animatePalette,
   // 描画処理
   onDrawBall,
   // 番兵
@@ -47,6 +50,11 @@ static Pad s_pad;
 // パレットのデータ
 enum { PALETTE_COUNT = 6 };
 static jo_palette s_palettes[PALETTE_COUNT];
+static const uint32_t BALL_COLOR_INDEX = 27;
+// 0番パレットの R, G, B
+static uint32_t s_master_colors[3];
+// 0番パレットの アニメーション量
+static int32_t s_master_color_vectors[3];
 
 // ボールのデータ
 enum { BALL_COUNT = 256 };
@@ -84,16 +92,25 @@ void onInitialize(void)
   const SpriteId sprite_id = jo_sprite_add_tga("TEX", "BALL.TGA", 1);
   jo_set_tga_palette_handling(JO_NULL);
 
-  // ロードしたパレットを元にPALETTE_COUNT個分のパレットを作成し、色を適当に変える
+  // ロードしたパレットの、ボールの色にあたる部分を適当に変える
   jo_palette* original_palette = &s_palettes[0];
+  s_master_colors[0] = getRandom() % 255;
+  s_master_colors[1] = getRandom() % 255;
+  s_master_colors[2] = getRandom() % 255;
+  original_palette->data[BALL_COLOR_INDEX] = JO_COLOR_RGB(s_master_colors[0], s_master_colors[1], s_master_colors[2]);
 
+  // 色の変化方向も適当に決める
+  for (int i = 0; i < 3; ++i) {
+    s_master_color_vectors[i] = getRandom() % 16 - getRandom() % 8;
+  }
+
+  // 0 番のパレットを複製して PALETTE_COUNT 個分パレットを作成する
   for (size_t i = 1; i < PALETTE_COUNT; ++i) {
     jo_palette* palette = &s_palettes[i];
-    const uint32_t ball_color_index = 27;
 
     jo_create_palette(palette);
     memcpy(&palette->data[0], &original_palette->data[0], sizeof palette->data[0] * 255);
-    palette->data[ball_color_index] =
+    palette->data[BALL_COLOR_INDEX] =
       JO_COLOR_RGB(getRandom() % 255, getRandom() % 255, getRandom() % 255); // ランダムに色を決める
   }
 
@@ -102,7 +119,10 @@ void onInitialize(void)
 
   // ボール作成
   for (size_t i = 0; i < BALL_COUNT; ++i) {
-    ballInitialize(&s_balls[i], sprite_id, s_palettes[i % PALETTE_COUNT].id);
+    // ボール0番のみ0番パレット固定、その他は1〜を順に設定
+    uint32_t palette_index = i == 0 ? 0 : 1 + i % (PALETTE_COUNT - 1);
+
+    ballInitialize(&s_balls[i], sprite_id, s_palettes[palette_index].id);
   }
 }
 
@@ -193,11 +213,39 @@ static void onUpdatePad(void)
   }
 }
 
+/**
+ * ボールの移動処理(を呼び出す)
+ */
 static void onUpdateBall(void)
 {
   for (size_t i = 0; i < s_enable_ball_count; ++i) {
     ballOnUpdate(&s_balls[i]);
   }
+}
+
+/**
+ * 0番パレットをアニメーションする
+ */
+static void animatePalette(void)
+{
+  for (int i = 0; i < 3; ++i) {
+    int32_t color = (int32_t)s_master_colors[i] + s_master_color_vectors[i];
+
+    // 0-255 の範囲を出たら逆方向へ
+    if (color < 0) {
+      color = 0;
+      s_master_color_vectors[i] *= -1;
+    }
+
+    if (255 < color) {
+      color = 255;
+      s_master_color_vectors[i] *= -1;
+    }
+
+    s_master_colors[i] = (uint32_t)color;
+  }
+
+  s_palettes[0].data[BALL_COLOR_INDEX] = JO_COLOR_RGB(s_master_colors[0], s_master_colors[1], s_master_colors[2]);
 }
 
 /**

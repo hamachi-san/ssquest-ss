@@ -10,9 +10,9 @@ JO_COMPILE_WITH_DUAL_CPU_MODULE = 0
 JO_DEBUG = 1
 JO_NTSC = 0
 JO_COMPILE_USING_SGL=1
-SRC_DIRS := src src/pad src/state src/wrapper
+SRC_DIRS := src src/game src/wrapper src/game/pad src/game/state
 SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
-CCFLAGS += -Isrc -Isrc/pad -Isrc/state -Isrc/wrapper
+CCFLAGS += -Isrc -Isrc/game -Isrc/wrapper -Isrc/game/pad -Isrc/game/state
 JO_ENGINE_SRC_DIR=../../jo_engine
 COMPILER_DIR=../../Compiler
 include $(COMPILER_DIR)/COMMON/jo_engine_makefile

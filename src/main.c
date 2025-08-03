@@ -9,8 +9,8 @@
 #include <memory.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "pad/pad.h"
-#include "state/global_state.h"
+#include "game/pad/pad.h"
+#include "game/state/global_state.h"
 #include "wrapper/input.h"
 
 typedef void (*UpdateFunc)(void);

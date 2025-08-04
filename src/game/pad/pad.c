@@ -1,6 +1,5 @@
 #include "pad.h"
 #include <assert.h>
-#include <jo/jo.h>
 #include "wrapper/input.h"
 
 /**

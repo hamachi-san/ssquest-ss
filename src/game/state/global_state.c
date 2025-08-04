@@ -1,6 +1,5 @@
 #include "global_state.h"
 #include <assert.h>
-#include <jo/jo.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include "main.h"
@@ -11,7 +10,7 @@ static void onStateInitialize(GlobalState* state);
 static void onStateMain(GlobalState* state);
 
 // ステート
-enum _GlobalState {
+enum GlobalState {
   GLOBAL_STATE_NULL,
   GLOBAL_STATE_INITIALIZE,
   GLOBAL_STATE_MAIN,

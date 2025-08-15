@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 #include "hash_map.h"
 #include "wrapper/memory.h"
 

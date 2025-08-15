@@ -2,9 +2,10 @@
 #define GAME_BALL_H_
 
 #include <stdint.h>
+#include <wrapper/sprite.h>
 
-typedef int32_t SpriteId;
-typedef int32_t PaletteId;
+typedef int SpriteId;
+typedef int PaletteId;
 
 typedef struct tagBall {
   // 表示X座標(小数部16bitの固定小数)

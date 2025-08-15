@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "game/ball.h"
 #include "game/pad/pad.h"
@@ -17,6 +18,7 @@
 #include "wrapper/input.h"
 #include "wrapper/math.h"
 
+typedef int SpriteId;
 typedef void (*UpdateFunc)(void);
 
 // 関数の前置宣言

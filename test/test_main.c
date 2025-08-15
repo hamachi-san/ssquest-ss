@@ -1,25 +1,13 @@
 #include "unity.h"
 #include "common/hash_map.h"
 
-void setUp(void)
-{
-  // 各テストの前に毎回実行される処理
-}
-
-void tearDown(void)
-{
-  // 各テストの後に毎回実行される処理
-}
-
-void test_main(void)
-{
-  // テストを記述
-}
-
+extern void run_all_hash_map_tests();
 
 int main(void)
 {
   UNITY_BEGIN();
-  RUN_TEST(test_main);
+
+  run_all_hash_map_tests();
+
   return UNITY_END();
 }

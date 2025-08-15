@@ -3,7 +3,7 @@ UNITY_ROOT := ../third_party/unity
 
 # コンパイラとフラグ
 CC := gcc
-CFLAGS := -Wall -Wextra -std=c99 -DUNIT_TEST -I$(UNITY_ROOT) -I../src -I.
+CFLAGS := -Wall -Wextra -Werror -std=c99 -DUNIT_TEST -I$(UNITY_ROOT) -I../src -I.
 
 # ユニットテスト対象のプロダクトコード（明示的に指定）
 SRC_UNDER_TEST := \

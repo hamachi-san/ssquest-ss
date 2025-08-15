@@ -10,6 +10,7 @@ JO_COMPILE_WITH_DUAL_CPU_MODULE = 0
 JO_DEBUG = 1
 JO_NTSC = 1
 JO_COMPILE_USING_SGL=1
+# 自動収集できないためコンパイル対象のディレクトリのみ明示的に指定(ディレクトリ内のファイルは再帰的に収集)
 SRC_DIRS := src src/common src/game src/wrapper src/game/pad src/game/state
 SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 CCFLAGS += -Isrc -Isrc/game -Isrc/wrapper -Isrc/game/pad -Isrc/game/state
